@@ -108,9 +108,10 @@ data/            README only (no market data is shipped)
 Python ≥ 3.10, NumPy, pandas, SciPy, scikit-learn, Matplotlib.
 
 Optional: XGBoost, LightGBM, CatBoost, TensorFlow/Keras, `arch`, `statsmodels`,
-`ruptures`, `yfinance` (see `requirements-optional.txt`). None of the optional
-packages were installed in the environment where this repository was validated,
-so the code paths that use them are **implemented but untested**.
+`ruptures`, `yfinance` (see `requirements-optional.txt`). `arch`, `statsmodels` and
+`ruptures` were installed and tested in a second environment. The other optional
+packages were not installed, so the code paths that use them are **implemented but
+untested**.
 
 ## 6. Installation & running
 
