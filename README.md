@@ -96,7 +96,7 @@ src/fints/
   stats.py       descriptive statistics
   dl.py          optional LSTM / GRU / Transformer (TensorFlow)
   cli.py         `python -m fints ...`
-tests/           unittest suite (33 tests)
+tests/           unittest suite (42 tests)
 examples/        minimal_holdout.py
 results/         synthetic demo outputs (with command + seed)
 docs/            PROVENANCE.md
@@ -121,7 +121,7 @@ pip install -r requirements.txt            # core only
 
 # run without installing the package:
 export PYTHONPATH=src
-python3 -m unittest discover -s tests -t .  # 33 tests, about 45 s
+python3 -m unittest discover -s tests -t .  # 42 tests, ~15 s; 3 skip without the stats extras
 ```
 
 `pip install -e .` (via `pyproject.toml`) should also work, but was not verified
@@ -209,7 +209,10 @@ Run A):
   finite samples (iid returns give roughly 0.5–0.6 in the tests), so this is not
   evidence of long memory.
 - GARCH, Markov switching and PELT were reported "not available", because the
-  optional packages were not installed.
+  optional packages were not installed for the shipped run. With them installed
+  (arch 9.0.0, statsmodels 0.15.0, ruptures 1.1.10), the same command fits GARCH(1,1)
+  with α + β = 0.963, two Markov regimes, and finds no PELT change points (pen = 10).
+  That output is not shipped.
 
 The original version's figures (e.g. ^SPX 1-day R² −0.0034, deep-learning ensemble
 R² −4.69) are **not** results of this repository. They came from test-set model
@@ -239,10 +242,14 @@ as history.
 
 ## 9. Limitations
 
-- **Slow statistics step.** With the optional `stats` extras installed, `fints describe` on 1,500 synthetic
-  days took about 30 minutes on a 2015 dual-core laptop (PELT with the rbf cost and the Markov-switching
-  fit). On that series PELT (pen = 10) found no change points, so it should not be read as regime
-  detection.
+- **Statistics step runtime.** With the optional `stats` extras installed, a timed run of `fints describe`
+  on 1,500 synthetic days took 40 s on a 2015 dual-core laptop (i5-5350U). An earlier, untimed run on the
+  same machine took about 30 minutes; the cause of the difference was not established. On that series
+  PELT (pen = 10) found no change points, so it should not be read as regime detection.
+- **The regime-separation check only detects flat probabilities.** It does not test whether regimes
+  exist: on i.i.d. Gaussian returns the 2-regime model still reported `separated = True` (variance
+  ratio 3.6), in one check during preparation. A likelihood-ratio or information-criterion comparison
+  against a 1-regime model would be needed.
 - **No real-market results.** The shipped results use synthetic data. With network
   access and `yfinance`, the same commands run on real tickers with fixed dates,
   but such a run was not made during preparation. The figures produced by the
@@ -266,8 +273,10 @@ as history.
 - **Models are not refitted on train + validation** before testing. Models fitted
   on train are tested directly, which is simpler but uses less data.
 - **Untested optional paths:** XGBoost/LightGBM/CatBoost candidates, the
-  TensorFlow models (`dl.py`), GARCH/Markov/PELT (`stats.py`) and the yfinance
-  download were not executed in the validation environment.
+  TensorFlow models (`dl.py`) and the yfinance download were not executed in the
+  validation environment. GARCH/Markov/PELT (`stats.py`) were executed in a second
+  environment with the `stats` extras and are covered by tests that fit series with
+  a planted structure; those tests skip when the extras are missing.
 - **The backtest is a research check of forecast usefulness.** It ignores
   slippage, borrow costs for shorts and position sizing.
 - GARCH conditional volatility and regime probabilities are not yet used as

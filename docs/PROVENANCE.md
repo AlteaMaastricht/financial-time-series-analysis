@@ -126,7 +126,10 @@ Line numbers refer to the original files.
   and is now labelled PELT. It runs on returns instead of price levels.
 * Added: a numpy Ljung-Box test, so the statsmodels dependency is not needed for it.
 * GARCH, Markov and PELT need optional packages (`arch`, `statsmodels`,
-  `ruptures`) and were **not executed** during preparation.
+  `ruptures`). They were executed in a separate environment with those packages
+  (Python 3.12; arch 9.0.0, statsmodels 0.15.0, ruptures 1.1.10). Three tests fit
+  series with a planted structure (GARCH persistence, two variance regimes, one
+  variance break) and skip when the package is missing.
 
 ### `src/fints/cli.py` ← `main6.py` L1474-1507, `main4.py` L507-521
 * `input()` prompts are replaced by argparse subcommands.

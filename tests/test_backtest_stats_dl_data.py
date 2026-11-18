@@ -4,13 +4,15 @@ import unittest
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 
 from tests import _path  # noqa: F401
 from fints.backtest import backtest, threshold_positions
 from fints.data import generate_synthetic_prices, load_price_csv
 from fints.dl import make_sequences, sequence_split
 from fints.stats import (
-    garch_11, hurst_rs, interpret_hurst, ljung_box, markov_switching, regime_separation,
+    garch_11, hurst_rs, interpret_hurst, ljung_box, markov_switching, pelt_change_points,
+    regime_separation,
 )
 
 
@@ -68,6 +70,47 @@ class TestStats(unittest.TestCase):
     @unittest.skipIf(importlib.util.find_spec("statsmodels") is not None, "statsmodels installed")
     def test_markov_degrades_gracefully(self):
         self.assertFalse(markov_switching(np.zeros(10))["available"])
+
+
+class TestOptionalStatsWhenInstalled(unittest.TestCase):
+    """Fit the optional models on series with a planted, known structure.
+
+    These run only when the optional package is installed; the core environment
+    runs the graceful-degradation tests above instead.
+    """
+
+    @unittest.skipIf(importlib.util.find_spec("arch") is None, "arch not installed")
+    def test_garch_recovers_planted_persistence(self):
+        rng = np.random.default_rng(0)
+        omega, alpha, beta, n = 0.05, 0.10, 0.85, 4000  # percent units
+        var, r = omega / (1 - alpha - beta), np.empty(n)
+        for t in range(n):
+            r[t] = np.sqrt(var) * rng.standard_normal()
+            var = omega + alpha * r[t] ** 2 + beta * var
+        out = garch_11(pd.Series(r / 100))  # garch_11 expects decimal returns
+        self.assertTrue(out["available"])
+        self.assertAlmostEqual(out["persistence"], alpha + beta, delta=0.03)
+        self.assertAlmostEqual(out["alpha"], alpha, delta=0.05)
+
+    @unittest.skipIf(importlib.util.find_spec("statsmodels") is None, "statsmodels not installed")
+    def test_markov_separates_planted_variance_regimes(self):
+        rng = np.random.default_rng(1)
+        sd = np.r_[np.full(500, 0.005), np.full(500, 0.03), np.full(500, 0.005)]
+        out = markov_switching(pd.Series(rng.standard_normal(sd.size) * sd))
+        self.assertTrue(out["available"])
+        self.assertTrue(out["separated"])
+        v = sorted(out["regime_variances"])
+        self.assertGreater(v[1] / v[0], 10)  # planted ratio is 36
+
+    @unittest.skipIf(importlib.util.find_spec("ruptures") is None, "ruptures not installed")
+    def test_pelt_finds_planted_break(self):
+        rng = np.random.default_rng(2)
+        sd = np.r_[np.full(300, 0.01), np.full(300, 0.05)]
+        idx = pd.date_range("2020-01-01", periods=sd.size, freq="B")
+        out = pelt_change_points(pd.Series(rng.standard_normal(sd.size) * sd, index=idx))
+        self.assertTrue(out["available"])
+        self.assertTrue(any(abs(i - 300) <= 15 for i in out["indices"]), out["indices"])
+        self.assertEqual(len(out["indices"]), len(out["dates"]))
 
 
 class TestSequences(unittest.TestCase):

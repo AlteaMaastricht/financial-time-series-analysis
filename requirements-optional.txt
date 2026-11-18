@@ -1,5 +1,6 @@
-# Optional extras. None of these were installed in the validation environment,
-# so code paths using them are untested (see docs/PROVENANCE.md).
+# Optional extras. arch, statsmodels and ruptures were installed and tested in a
+# second environment; the others were not installed, so code paths using them are
+# untested (see docs/PROVENANCE.md).
 xgboost
 lightgbm
 catboost
