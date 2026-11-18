@@ -1,0 +1,63 @@
+{
+  "run_info": {
+    "command": "python -m fints describe --synthetic --n-days 1500 --seed 42 --out results/synthetic_describe",
+    "seed": 42,
+    "data_source": "synthetic(n_days=1500, seed=42, ar_coef=0.0)",
+    "fints_version": "0.2.0",
+    "python": "3.14.0",
+    "numpy": "2.4.4",
+    "pandas": "3.1.0",
+    "scipy": "1.17.1",
+    "scikit_learn": "1.8.0",
+    "utc_time": "2026-11-17T20:09:26Z",
+    "disclaimer": "Research/educational output only. These are evaluations of statistical forecasts, not trading signals and not investment advice."
+  },
+  "stats": {
+    "rows": 1500,
+    "start": "2015-01-02",
+    "end": "2020-10-01",
+    "risk": {
+      "annual_return": -0.012641836685692309,
+      "annual_volatility": 0.1761143779324031,
+      "sharpe_ratio": -0.0717819682532936,
+      "sortino_ratio": -0.10666870053562545,
+      "var_95": -0.01763811104343719,
+      "cvar_95": -0.024502118009270633,
+      "max_drawdown": -0.4828855022802556,
+      "skewness": 0.9915001623214221,
+      "excess_kurtosis": 13.056505961998244
+    },
+    "normality": {
+      "shapiro_p": 2.0882788425655934e-27,
+      "jarque_bera_p": 0.0,
+      "dagostino_p": 2.3334984490098432e-107,
+      "normal_at_5pct": false
+    },
+    "ljung_box_returns": {
+      "lags": 10,
+      "q_stat": 11.752134792149798,
+      "p_value": 0.3019877013986308
+    },
+    "ljung_box_squared_returns": {
+      "lags": 10,
+      "q_stat": 110.26171931559851,
+      "p_value": 4.7251289602991225e-19
+    },
+    "hurst_returns": {
+      "H": 0.5614926819837434,
+      "interpretation": "persistent (H > 0.5)"
+    },
+    "garch": {
+      "available": false,
+      "reason": "optional package 'arch' not installed"
+    },
+    "markov_switching": {
+      "available": false,
+      "reason": "optional package 'statsmodels' not installed"
+    },
+    "change_points": {
+      "available": false,
+      "reason": "optional package 'ruptures' not installed"
+    }
+  }
+}

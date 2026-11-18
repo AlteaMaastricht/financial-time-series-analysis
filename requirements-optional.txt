@@ -1,0 +1,10 @@
+# Optional extras. None of these were installed in the validation environment,
+# so code paths using them are untested (see docs/PROVENANCE.md).
+xgboost
+lightgbm
+catboost
+tensorflow      # fints.dl (LSTM / GRU / Transformer)
+arch            # GARCH(1,1) in fints.stats
+statsmodels     # Markov switching in fints.stats
+ruptures        # PELT change points in fints.stats
+yfinance        # `python -m fints download` (network)

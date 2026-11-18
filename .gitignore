@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.DS_Store
+*.egg-info/
+build/
+dist/
+.ipynb_checkpoints/
+# downloaded market data must stay local (Yahoo terms); synthetic CSVs can be regenerated
+data/*.csv
+# ad-hoc runs; the curated demo outputs in results/synthetic_* are committed
+results/run/
+results/describe/

@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fints"
+version = "0.2.0"
+description = "Leakage-aware evaluation of ML return forecasts with naive baselines, walk-forward validation and descriptive time-series statistics"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.26", "pandas>=2.1", "scipy>=1.11", "scikit-learn>=1.4", "matplotlib>=3.8"]
+
+[project.optional-dependencies]
+boosting = ["xgboost", "lightgbm", "catboost"]
+dl = ["tensorflow"]
+stats = ["arch", "statsmodels", "ruptures"]
+data = ["yfinance"]
+
+[project.scripts]
+fints = "fints.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
